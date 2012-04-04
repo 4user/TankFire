@@ -1,5 +1,8 @@
 package panzer;
 
+import java.awt.Point;
+import java.util.List;
+
 import game.Map;
 import panzer.module.*;
 
@@ -15,6 +18,7 @@ public class Panzer {
 	boolean in_use = false;	
 	int viewdistance = 4; //Sichtweite in km 
 	int heading = 0;
+	List<Point> visitedField;
 	
 	
 	Kanone kanone = new Kanone();
