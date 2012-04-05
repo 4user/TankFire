@@ -3,6 +3,7 @@ package panzer;
 import java.awt.Point;
 import java.util.List;
 
+import game.Config;
 import game.Map;
 import panzer.module.*;
 
@@ -16,9 +17,9 @@ public class Panzer {
 	int level = 1;
 	boolean in_danger = false;
 	boolean in_use = false;	
-	int viewdistance = 4; //Sichtweite in km 
 	int heading = 0;
 	List<Point> visitedField;
+	boolean isAttacker = true;
 	
 	
 	Kanone kanone = new Kanone();
@@ -158,21 +159,49 @@ public class Panzer {
 		this.heading = heading;
 	}
 
+	public List<Point> getVisitedField() {
+		return visitedField;
+	}
+
+	public void setVisitedField(List<Point> visitedField) {
+		this.visitedField = visitedField;
+	}
+	
+	public boolean isVisitedField(double distance, int direction) {
+		Point point = new Point();
+		this.pos_x = this.pos_x + (distance * Math.sin(Math.toRadians(direction)));
+		this.pos_y = this.pos_y + (distance * Math.cos(Math.toRadians(direction)));
+		point.setLocation(pos_x, pos_y);
+		if(this.getVisitedField().contains(point) | point.x > this.map.getWidth() | point.x < 0 | point.y > this.map.getHeight() | point.y < 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isAttacker() {
+		return isAttacker;
+	}
+
+	public void setAttacker(boolean isAttacker) {
+		this.isAttacker = isAttacker;
+	}
+
 	public void move(int time) {
 		
-		if(pos_x < (viewdistance*1000)) {
+		if(pos_x < (Config.viewdistance*1000)) {
 			heading = 90;
 			move(heading, time);			
 		} else {
-			if(pos_x > (map.getWidth()*1000-viewdistance*1000)) {
+			if(pos_x > (map.getWidth()*1000-Config.viewdistance*1000)) {
 				heading = 270;
 				move(heading, time);
 			} else {
-				if(pos_y < (viewdistance*1000)) {
+				if(pos_y < (Config.viewdistance*1000)) {
 					heading = 0;
 					move(heading, time);
 				} else {
-					if(pos_y >(map.getHeight()*1000-viewdistance*1000)) {
+					if(pos_y >(map.getHeight()*1000-Config.viewdistance*1000)) {
 						heading = 180;
 						move(heading,time);
 					} else {
