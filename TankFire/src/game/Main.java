@@ -23,7 +23,7 @@ public class Main {
 
 			feld = panzer.getMap().getField(panzer.getPos_x(), panzer.getPos_y());
 			System.out.println(t_h+ ":"+t_min+" Position: \t" + df.format(panzer.getPos_x()) + ":" + df.format(panzer.getPos_y()) + "\t SF: " + df.format(feld.getX())+"."+df.format(feld.getY())+"\t Heading: "+panzer.getHeading());	
-			panzer.move(60);
+			panzer.move(0);
 			t_min++;
 		}
 		

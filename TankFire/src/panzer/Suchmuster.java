@@ -43,6 +43,45 @@ public class Suchmuster {
 			panzer.setHeading(90);
 			panzer.move(panzer.getHeading(), time);
 		}
+		
 	}
 
+	public boolean tiefensuche(Panzer panzer, int time) {
+		int richtung = 0;
+		if(!panzer.isAttacker()) {
+			richtung = 180;
+		}
+		
+		if(panzer.getHeading()+richtung == 0 && !(panzer.isVisitedField(Config.viewdistance, 270+richtung))) {
+			panzer.setHeading(270+richtung);
+			panzer.move(panzer.getHeading(), time);
+			return true;
+		}
+		//Süd, Ost bekannt --> Richtung Nord
+		if(panzer.isVisitedField(Config.viewdistance, 180+richtung) 
+				&& panzer.isVisitedField(Config.viewdistance, 270+richtung)) {
+			panzer.setHeading(0+richtung);
+			panzer.move(panzer.getHeading(), time);
+			return true;
+		}
+		//Süd, Ost, Nord bekannt --> Richtung West
+		if((panzer.isVisitedField(Config.viewdistance, 180+richtung)) 
+				&& (panzer.isVisitedField(Config.viewdistance, 270+richtung)) 
+				&& panzer.isVisitedField(Config.viewdistance, 0+richtung)) {
+			panzer.setHeading(90+richtung);
+			panzer.move(panzer.getHeading(), time);
+			return true;
+		}		
+		//Ost, Nord bekannt	-->Richtung Süd
+		if(panzer.isVisitedField(Config.viewdistance, 270+richtung) 
+				&& panzer.isVisitedField(Config.viewdistance, 0+richtung)) {
+			panzer.setHeading(180+richtung);
+			panzer.move(panzer.getHeading(), time);	
+			return true;
+		} else {
+			panzer.move(panzer.getHeading(), time);
+			return true;
+		}
+		
+	}
 }

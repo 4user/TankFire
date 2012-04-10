@@ -1,11 +1,14 @@
 package panzer;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
+
 
 import game.Config;
 import game.Map;
 import panzer.module.*;
+import panzer.Suchmuster;
 
 public class Panzer {
 	
@@ -18,8 +21,9 @@ public class Panzer {
 	boolean in_danger = false;
 	boolean in_use = false;	
 	int heading = 0;
-	List<Point> visitedField;
+	List<Point> visitedField = new ArrayList<Point>();
 	boolean isAttacker = true;
+	Suchmuster suchmuster = new Suchmuster();
 	
 	
 	Kanone kanone = new Kanone();
@@ -35,9 +39,10 @@ public class Panzer {
 	
 	public Panzer() {
 		this.name = "Panzer III";
-		
-	}
+		Point point = new Point();
 
+	}
+	//TODO new CONSTRUCTOR
 	public Panzer(String name, String[] typ, int pos_x, int pos_y, int level,
 			boolean in_danger, Kanone kanone, Kommandant kommandant,
 			Motor motor, Panzerung panzerung, Map map) {
@@ -169,10 +174,15 @@ public class Panzer {
 	
 	public boolean isVisitedField(double distance, int direction) {
 		Point point = new Point();
-		this.pos_x = this.pos_x + (distance * Math.sin(Math.toRadians(direction)));
-		this.pos_y = this.pos_y + (distance * Math.cos(Math.toRadians(direction)));
-		point.setLocation(pos_x, pos_y);
-		if(this.getVisitedField().contains(point) | point.x > this.map.getWidth() | point.x < 0 | point.y > this.map.getHeight() | point.y < 0) {
+		double h_x,h_y;
+		h_x = this.pos_x + (distance * Math.sin(Math.toRadians(direction)));
+		h_y = this.pos_y + (distance * Math.cos(Math.toRadians(direction)));
+		point.setLocation(h_x, h_y);
+		if(this.getVisitedField().contains(point) 
+				| point.x > this.map.getWidth() 
+				| point.x < 0 
+				| point.y > this.map.getHeight() 
+				| point.y < 0) {
 			return true;
 		} else {
 			return false;
@@ -187,30 +197,10 @@ public class Panzer {
 		this.isAttacker = isAttacker;
 	}
 
-	public void move(int time) {
+	public void move(int pattern) {
 		
-		if(pos_x < (Config.viewdistance*1000)) {
-			heading = 90;
-			move(heading, time);			
-		} else {
-			if(pos_x > (map.getWidth()*1000-Config.viewdistance*1000)) {
-				heading = 270;
-				move(heading, time);
-			} else {
-				if(pos_y < (Config.viewdistance*1000)) {
-					heading = 0;
-					move(heading, time);
-				} else {
-					if(pos_y >(map.getHeight()*1000-Config.viewdistance*1000)) {
-						heading = 180;
-						move(heading,time);
-					} else {
-						//System.exit(0);
-						move(heading,time);
-					}
-					
-				}
-			}
+		if(pattern == 0) {
+			suchmuster.tiefensuche(this, Config.tick);			
 		}
 	}
 	
@@ -218,6 +208,10 @@ public class Panzer {
 	//time in sec
 	public void move(int direction, int time) {
 		
+		//aktuelle Position merken
+		Point point = new Point();
+		point.setLocation(pos_x, pos_y);
+		this.visitedField.add(point);
 		
 		double distance = (this.motor.getSpeed()/3.6)*time;
 		
