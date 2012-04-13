@@ -6,7 +6,27 @@ import game.Config;
 
 public class Suchmuster {
 	
+	public Point nearestPoint(Panzer panzer) {
+		if(panzer.visitedField.isEmpty()) {
+			return null;
+		}
+		double distance = Config.viewdistance*1000;
+		Point rpoint = null;
+		for(Point point : panzer.visitedField) {
+			if(point.distance(panzer.getPos_x(), panzer.getPos_y()) < distance) {
+				distance = point.distance(panzer.getPos_x(), panzer.getPos_y());
+				rpoint = point;
+			}			
+		}
+		return rpoint;		
+	}
 	
+	public double getBearing(Panzer panzer, Point point) {
+		double y = Math.toRadians(point.y - panzer.pos_y);
+		double x = Math.toRadians(point.x - panzer.pos_x);
+		double tan = Math.toDegrees(Math.atan2(x,y));
+		return (tan+360)%360;
+	}
 	
 	public void tiefensucheL(Panzer panzer, int time) {
 		double _x,_y;

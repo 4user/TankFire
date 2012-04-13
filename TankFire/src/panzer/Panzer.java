@@ -39,8 +39,6 @@ public class Panzer {
 	
 	public Panzer() {
 		this.name = "Panzer III";
-		Point point = new Point();
-
 	}
 	//TODO new CONSTRUCTOR
 	public Panzer(String name, String[] typ, int pos_x, int pos_y, int level,
