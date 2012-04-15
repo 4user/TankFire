@@ -15,7 +15,7 @@ public class Main {
 		Point feld;
 		System.out.println("#####START#####");
 		System.out.println(panzer.getName() + " unter Leitung von " +panzer.getKommandant().getName());
-		while(t_h < 1) {
+		while(t_h < 2) {
 			if(t_min >= 60) {
 				t_h++;
 				t_min = 0;
@@ -23,6 +23,10 @@ public class Main {
 
 			feld = panzer.getMap().getField(panzer.getPos_x(), panzer.getPos_y());
 			System.out.println(t_h+ ":"+t_min+" Position: \t" + df.format(panzer.getPos_x()) + ":" + df.format(panzer.getPos_y()) + "\t SF: " + df.format(feld.getX())+"."+df.format(feld.getY())+"\t Heading: "+panzer.getHeading());	
+			if(t_h == 1 && t_min == 3) {
+				int sd=0;
+				sd++;
+			}
 			panzer.move(0);
 			t_min++;
 		}

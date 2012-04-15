@@ -4,7 +4,7 @@ import java.awt.Point;
 public class Map {
 	
 	double height = 15; // in km
-	double width = 9;	// in km
+	double width = 15;	// in km
 		
 	
 	public Map() {

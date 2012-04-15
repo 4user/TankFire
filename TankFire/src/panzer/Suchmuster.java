@@ -21,49 +21,67 @@ public class Suchmuster {
 		return rpoint;		
 	}
 	
-	public double getBearing(Panzer panzer, Point point) {
-		double y = Math.toRadians(point.y - panzer.pos_y);
-		double x = Math.toRadians(point.x - panzer.pos_x);
-		double tan = Math.toDegrees(Math.atan2(x,y));
-		return (tan+360)%360;
-	}
-	
-	public void tiefensucheL(Panzer panzer, int time) {
-		double _x,_y;
-		Point point = new Point();
-		_x = (0 + Config.viewdistance)/2;
-		_y = (0 + Config.viewdistance)/2;
-		point.setLocation(_x, _y);
-		if(!panzer.getVisitedField().contains(panzer.map.getField(_x, _y))) {
-			panzer.setHeading(270);
-			panzer.move(panzer.getHeading(), time);
+	public boolean tiefensucheL(Panzer panzer, int time) {
+		boolean north = false;
+		boolean south = false;
+		boolean east = false;
+		boolean west = false;
+		
+		if(panzer.getPos_x()+Config.viewdistance*1000 >= panzer.map.getWidth()*1000) {
+			east = true;
 		}
-		//Wenn Richtung 0 NORD UND (Feld im Norden bekannt ist ODER Feld im Norden > als Karte)
-		//Merke aktuelles Feld
-		//Fahr nach Rechts
-		if(panzer.getHeading() == 0 && (panzer.getVisitedField().contains(panzer.map.getField(panzer.getPos_x(),panzer.getPos_y()+Config.viewdistance)) | panzer.getPos_y()+Config.viewdistance > panzer.map.getHeight() )) {
-			point.setLocation(panzer.getPos_x(), panzer.getPos_y());
-			panzer.visitedField.add(point);
-			panzer.setHeading(90);
-			panzer.move(panzer.getHeading(), time);
+		if(panzer.getPos_x()-Config.viewdistance*1000 <= 0) {
+			west = true;
 		}
-		//Wenn Richtung 180 SÜD UND (Feld im Süden bekannt ist ODER Feld im Süden < als Karte)
-		//Merke aktuelles Feld
-		//Fahr nach Rechts
-		if(panzer.getHeading() == 180 && (panzer.getVisitedField().contains(panzer.map.getField(panzer.getPos_x(),panzer.getPos_y()-Config.viewdistance)) | panzer.getPos_y()-Config.viewdistance < 0 )) {
-			point.setLocation(panzer.getPos_x(), panzer.getPos_y());
-			panzer.visitedField.add(point);
-			panzer.setHeading(270);
-			panzer.move(panzer.getHeading(), time);
+		if(panzer.getPos_y()+Config.viewdistance*1000 >= panzer.map.getHeight()*1000) {
+			north = true;
 		}
-		// Wenn Richtung 90 Ost UND (Feld im Westen weiter entfernt als Sichtweite/2)
-		// Merke aktuelles Feld
-		//Fahr nach Süden
-		if(panzer.getHeading() == 90 && (panzer.getVisitedField().contains(panzer.map.getField(panzer.getPos_x(),panzer.getPos_y()+Config.viewdistance)) | panzer.getPos_y()+Config.viewdistance > panzer.map.getHeight() )) {
-			panzer.setHeading(90);
-			panzer.move(panzer.getHeading(), time);
+		if(panzer.getPos_y()-Config.viewdistance*1000 <= 0) {
+			south = true;
 		}
 		
+		
+		for (Point point: panzer.viewField) {
+			if(!north && (panzer.getBearing(point) >= 315 && panzer.getBearing(point) < 360 | panzer.getBearing(point) < 45)) {
+				north = true;				
+			}
+			if(!east && (panzer.getBearing(point) >= 45 && panzer.getBearing(point) < 135)) {
+				east = true;				
+			}
+			if(!south &&(panzer.getBearing(point) >= 135 && panzer.getBearing(point) < 225)) {
+				south = true;				
+			}
+			if(!west &&(panzer.getBearing(point) >= 225 && panzer.getBearing(point) < 315)) {
+				west = true;				
+			}
+		}
+		if(panzer.isAttacker()){
+			panzer.setHeading(270);
+		} else {
+			panzer.setHeading(95);
+		}
+		if(west && south ) {
+			panzer.setHeading(0);
+		}
+		if(west && !south && north){
+			panzer.setHeading(180);
+		}
+		if(!east && west && north && south){
+			panzer.setHeading(90);			
+		}
+		if(east && !west && north && south) {
+			panzer.setHeading(270);			
+		}
+		if(east && west && !north && south) {
+			panzer.setHeading(0);			
+		}
+		if(east && west && north && !south) {
+			panzer.setHeading(180);			
+		}
+		panzer.move(panzer.getHeading(), time);
+		
+		
+		return true;
 	}
 
 	public boolean tiefensuche(Panzer panzer, int time) {

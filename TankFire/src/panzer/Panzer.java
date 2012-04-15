@@ -22,6 +22,7 @@ public class Panzer {
 	boolean in_use = false;	
 	int heading = 0;
 	List<Point> visitedField = new ArrayList<Point>();
+	List<Point> viewField = new ArrayList<Point>();
 	boolean isAttacker = true;
 	Suchmuster suchmuster = new Suchmuster();
 	
@@ -198,8 +199,24 @@ public class Panzer {
 	public void move(int pattern) {
 		
 		if(pattern == 0) {
-			suchmuster.tiefensuche(this, Config.tick);			
+			suchmuster.tiefensucheL(this, Config.tick);			
 		}
+	}
+	
+	public double getBearing(Point point) {
+		double y = Math.toRadians(point.y - pos_y);
+		double x = Math.toRadians(point.x - pos_x);
+		double tan = Math.toDegrees(Math.atan2(x,y));
+		return (tan+360)%360;
+	}
+	
+	public void setViewField() {
+		viewField.clear();
+		for (Point point: visitedField) {
+			   if(point.distance(pos_x, pos_y) < Config.viewdistance*1000){
+				   viewField.add(point);
+			   }
+			}
 	}
 	
 	//direction 0 north, 90 east, 180 south, 270 west
@@ -225,6 +242,9 @@ public class Panzer {
 		if(this.pos_y < 0) {	this.pos_y = 0; }
 		if(this.pos_x > map.getWidth()*1000) 	{	this.pos_x = map.getWidth()*1000; }
 		if(this.pos_y > map.getHeight()*1000) 	{	this.pos_y = map.getHeight()*1000; }
+		
+		//Sichtfeld aktuallisieren
+		this.setViewField();
 		
 		/*4 Bewegungsrichtungen Switch direction 0 = north, 1 = east, 2 = south, 3 = west
 		switch(direction) {
